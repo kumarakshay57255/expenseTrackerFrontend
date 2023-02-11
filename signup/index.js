@@ -13,7 +13,7 @@ async function addUser(event){
        const obj = {
          name,email,password:pass
        }
-     const userPost = await axios.post('http://localhost:4400/user',obj)
+     const userPost = await axios.post('http://localhost:4400/signUp',obj)
      alert(userPost.data);
    } catch (error) {
      throw Error(error);
