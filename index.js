@@ -1,18 +1,21 @@
 const signUp = document.getElementById('signUp');
-const names = document.getElementById('name');
-const email = document.getElementById('email');
-const pass = document.getElementById('pass')
-signUp.addEventListener('click',()=>{
-   if(names.value==''){
-    alert('Name cannot be empty');
-    return;
+
+
+signUp.addEventListener('click',addUser)
+
+async function addUser(event){
+   try {
+     
+       event.preventDefault();
+       const name = document.getElementById('name').value;
+       const email = document.getElementById('email').value;
+       const pass = document.getElementById('pass').value;
+       const obj = {
+         name,email,password:pass
+       }
+     const userPost = await axios.post('http://localhost:4400/user',obj)
+     alert(userPost.data);
+   } catch (error) {
+     throw Error(error);
    }
-   if(email.value==''){
-    alert('email cannot be empty');
-    return;
-   }
-   if(pass.value==''){
-    alert('password cannot be empty');
-    return;
-   }
-})
+}
