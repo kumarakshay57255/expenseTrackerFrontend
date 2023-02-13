@@ -14,8 +14,8 @@ async function addUser(event){
          name,email,password:pass
        }
      const userPost = await axios.post('http://localhost:4400/signUp',obj)
-     alert(userPost.data);
+  alert(userPost.data.message)
    } catch (error) {
-     throw Error(error);
+  alert(err);
    }
 }

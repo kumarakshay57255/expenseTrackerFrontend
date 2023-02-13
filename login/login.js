@@ -12,8 +12,8 @@ async function loginUser(event){
             email,password
         }
        const userLogin =  await axios.post('http://localhost:4400/login',loginDetails);
-         alert(userLogin.data);
-    } catch (error) {
-        throw Error(error);
+      alert(userLogin.data.message);
+    } catch (err) {
+     alert(err.response.data.message)
     }
 } 
