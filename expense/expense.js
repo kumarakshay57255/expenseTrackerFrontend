@@ -8,6 +8,7 @@ let btn = document.getElementById('submit');
 
 
 btn.addEventListener('click',AddExpense);
+addExpense.addEventListener('click',deleteExpense);
 
 async function AddExpense(event){
 
@@ -42,7 +43,7 @@ async function AddExpense(event){
 function showItems(obj){
 
   let li = document.createElement('li');
-   li.id=`${obj._id}`;
+   li.id=`${obj.id}`;
 
    let delBtn = document.createElement('button');
    delBtn.className="btn btn-danger delete";
@@ -70,3 +71,15 @@ window.addEventListener('DOMContentLoaded',async(e)=>{
   }
    
 })
+
+async function deleteExpense(event){
+   if(event.target.classList.contains('delete')){
+     const id = event.target.parentElement.id;
+     const expense = await axios.delete(`http://localhost:4400/expense/${id}`);
+     alert(expense.data.message)
+   addExpense.removeChild(event.target.parentElement);
+   
+  }
+
+ 
+}
