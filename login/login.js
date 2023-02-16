@@ -12,6 +12,7 @@ async function loginUser(event){
             email,password
         }
        const userLogin =  await axios.post('http://localhost:4400/login',loginDetails);
+       localStorage.setItem('token',userLogin.data.token);
       alert(userLogin.data.message);
       window.location.href="../expense/expense.html";
     } catch (err) {
