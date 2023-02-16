@@ -14,6 +14,7 @@ async function AddExpense(event){
 
     try {
       event.preventDefault();
+      const token = localStorage.getItem('token');
     
     if(expense.value==''||description.value==''||category.value==''){
       alert('plz enter all values');
@@ -29,7 +30,7 @@ async function AddExpense(event){
       let obj={
           expenseamount:expense.value,description:description.value,category:category.value
       }
-     const item = await axios.post('http://localhost:4400/expense',obj);
+     const item = await axios.post('http://localhost:4400/expense',obj,{headers:{"Authorization":token}});
      showItems(item.data.expense);
  
   
@@ -61,7 +62,9 @@ function showItems(obj){
 
 window.addEventListener('DOMContentLoaded',async(e)=>{
   try {
-   const  items  = await axios.get('http://localhost:4400/expense');
+    const token = localStorage.getItem('token');
+   const  items  = await axios.get('http://localhost:4400/expense',{headers:{"Authorization":token}});
+
     items.data.expense.map((ele)=>{
       showItems(ele);
     });
@@ -73,13 +76,18 @@ window.addEventListener('DOMContentLoaded',async(e)=>{
 })
 
 async function deleteExpense(event){
-   if(event.target.classList.contains('delete')){
-     const id = event.target.parentElement.id;
-     const expense = await axios.delete(`http://localhost:4400/expense/${id}`);
-     alert(expense.data.message)
-   addExpense.removeChild(event.target.parentElement);
+  try {
+    if(event.target.classList.contains('delete')){
+      const token = localStorage.getItem('token');
+      const id = event.target.parentElement.id;
+      const expense = await axios.delete(`http://localhost:4400/expense/${id}`,{headers:{"Authorization":token}});
+      alert(expense.data.message)
+    addExpense.removeChild(event.target.parentElement);
+  }}catch (error) {
+     throw Error(error);
+  }
+  
    
   }
 
  
-}
