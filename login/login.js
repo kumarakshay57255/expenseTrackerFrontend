@@ -1,10 +1,13 @@
 const login = document.getElementById('login');
+const razor = document.getElementById('razorpay');
+
 
 login.addEventListener('click',loginUser);
 
 
 async function loginUser(event){
     try {
+        console.log('hiii')
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('pass').value;
@@ -19,3 +22,5 @@ async function loginUser(event){
      alert(err.response.data.message)
     }
 } 
+
+
