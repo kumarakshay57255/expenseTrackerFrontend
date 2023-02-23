@@ -94,14 +94,15 @@ async function deleteExpense(event){
         e.preventDefault();
       const token = localStorage.getItem('token');
     const response = await axios.get('http://localhost:4400/purchase/premiummembership',{headers:{"Authorization":token}});
-  console.log(response.razorpay_payment_id)
+  
   let options = {
     "key":response.data.key_id,
-    "order_id":response.data.order,
-    "handler":async function (){
+    "order_id":response.data.order.id,
+    "handler":async function (response){
+      console.log('response inside -->',response);
       await axios.post('http://localhost:4400/purchase/updatetransactionstatus',{
         order_id:options.order_id,
-        payment_id:response.razorpay_payment_id,
+        payment_id: response.razorpay_payment_id,
       },{headers:{"Authorization":token}})
       alert('You  are premium user now!')
     },
@@ -110,10 +111,17 @@ async function deleteExpense(event){
   const rzp1 = new Razorpay(options);
   rzp1.open();
   e.preventDefault();
+
+
   rzp1.on('payment.failed', function (response){
     console.log(response)
     alert('Something went wrong')
  });
+
+
+
+
+
       
 
     } catch (error) {
