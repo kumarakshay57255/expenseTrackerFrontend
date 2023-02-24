@@ -7,7 +7,6 @@ login.addEventListener('click',loginUser);
 
 async function loginUser(event){
     try {
-        console.log('hiii')
         event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('pass').value;

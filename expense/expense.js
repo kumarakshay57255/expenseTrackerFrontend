@@ -9,6 +9,16 @@ razor.addEventListener('click',buyPremium);
 btn.addEventListener('click',AddExpense);
 addExpense.addEventListener('click',deleteExpense);
 
+function parseJwt (token) {
+  var base64Url = token.split('.')[1];
+  var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+
+  return JSON.parse(jsonPayload);
+}
+
 async function AddExpense(event){
 
     try {
@@ -62,6 +72,11 @@ function showItems(obj){
 window.addEventListener('DOMContentLoaded',async(e)=>{
   try {
     const token = localStorage.getItem('token');
+    const decodeToken = parseJwt(token);
+    if(decodeToken.ispremiumuser){
+      razor.style.visibility = 'hidden';
+      document.getElementById('message').innerHTML = 'You are premium user now!';
+    }
    const  items  = await axios.get('http://localhost:4400/expense',{headers:{"Authorization":token}});
 
     items.data.expense.map((ele)=>{
@@ -93,18 +108,20 @@ async function deleteExpense(event){
     try {
         e.preventDefault();
       const token = localStorage.getItem('token');
+    
     const response = await axios.get('http://localhost:4400/purchase/premiummembership',{headers:{"Authorization":token}});
   
   let options = {
     "key":response.data.key_id,
     "order_id":response.data.order.id,
     "handler":async function (response){
-      console.log('response inside -->',response);
       await axios.post('http://localhost:4400/purchase/updatetransactionstatus',{
         order_id:options.order_id,
         payment_id: response.razorpay_payment_id,
       },{headers:{"Authorization":token}})
       alert('You  are premium user now!')
+      razor.style.visibility = 'hidden';
+    document.getElementById('message').innerHTML = 'You are premium user now!';
     },
   
   }
