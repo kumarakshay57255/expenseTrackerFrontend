@@ -4,10 +4,47 @@ let category = document.getElementById('options')
 let addExpense = document.getElementById('addExpence')
 let btn = document.getElementById('submit');
 let razor = document.getElementById('razorpay')
+let leader = document.getElementById('leader');
+let board = document.getElementById('board');
 
 razor.addEventListener('click',buyPremium);
 btn.addEventListener('click',AddExpense);
 addExpense.addEventListener('click',deleteExpense);
+
+
+
+
+ function showLeaderBoard(){
+   try {
+     const inputEle = document.createElement("input");
+     inputEle.type = "button";
+     inputEle.value = "Show Leaderboard";
+     inputEle.className = "btn btn-primary"
+     inputEle.onclick = async ()=>{
+         const token = localStorage.getItem('token');
+         const userLeader = await axios.get('http://localhost:4400/premium/showleader',{headers:{"Authorization":token}});
+       
+         let LeaderboardElem = document.getElementById('board');
+         LeaderboardElem.innerHTML = `<h1> Leader Board </h1>`;
+         userLeader.data.map((ele)=>{
+            LeaderboardElem.innerHTML += `<li> Name - ${ele.name} Total Expense - ${ele.totalcost}`
+         })
+  
+        }
+        document.getElementById("message").appendChild(inputEle);
+
+   
+     
+       
+
+
+
+   } catch (error) {
+     throw Error(error);
+   }
+}
+
+
 
 function parseJwt (token) {
   var base64Url = token.split('.')[1];
@@ -76,6 +113,7 @@ window.addEventListener('DOMContentLoaded',async(e)=>{
     if(decodeToken.ispremiumuser){
       razor.style.visibility = 'hidden';
       document.getElementById('message').innerHTML = 'You are premium user now!';
+      showLeaderBoard();
     }
    const  items  = await axios.get('http://localhost:4400/expense',{headers:{"Authorization":token}});
 
@@ -109,11 +147,11 @@ async function deleteExpense(event){
         e.preventDefault();
       const token = localStorage.getItem('token');
     
-    const response = await axios.get('http://localhost:4400/purchase/premiummembership',{headers:{"Authorization":token}});
-  
+    const res = await axios.get('http://localhost:4400/purchase/premiummembership',{headers:{"Authorization":token}});
+     
   let options = {
-    "key":response.data.key_id,
-    "order_id":response.data.order.id,
+    "key":res.data.key_id,
+    "order_id":res.data.order.id,
     "handler":async function (response){
       await axios.post('http://localhost:4400/purchase/updatetransactionstatus',{
         order_id:options.order_id,
@@ -122,6 +160,8 @@ async function deleteExpense(event){
       alert('You  are premium user now!')
       razor.style.visibility = 'hidden';
     document.getElementById('message').innerHTML = 'You are premium user now!';
+      localStorage.setItem('token',res.data.token);
+      showLeaderBoard();
     },
   
   }
