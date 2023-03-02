@@ -27,7 +27,7 @@ addExpense.addEventListener('click',deleteExpense);
          let LeaderboardElem = document.getElementById('board');
          LeaderboardElem.innerHTML = `<h1> Leader Board </h1>`;
          userLeader.data.map((ele)=>{
-            LeaderboardElem.innerHTML += `<li> Name - ${ele.name} Total Expense - ${ele.totalcost}`
+            LeaderboardElem.innerHTML += `<li> Name - ${ele.name} Total Expense - ${ele.totalexpense}`
          })
   
         }
