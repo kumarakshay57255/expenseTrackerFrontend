@@ -6,12 +6,17 @@ let btn = document.getElementById('submit');
 let razor = document.getElementById('razorpay')
 let leader = document.getElementById('leader');
 let board = document.getElementById('board');
+const download = document.getElementById('downloadexpense');
 
 razor.addEventListener('click',buyPremium);
 btn.addEventListener('click',AddExpense);
 addExpense.addEventListener('click',deleteExpense);
+download.addEventListener('click',downloadExpense);
 
 
+function downloadExpense(){
+  console.log("CLicked");
+}
 
 
  function showLeaderBoard(){
