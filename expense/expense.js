@@ -14,8 +14,23 @@ addExpense.addEventListener('click',deleteExpense);
 download.addEventListener('click',downloadExpense);
 
 
-function downloadExpense(){
-  console.log("CLicked");
+async function downloadExpense(){
+  try {
+    const token = localStorage.getItem('token');
+ const res = await axios.get('http://localhost:4400/download',{headers:{"Authorization":token}});
+  if(res.status===200){
+    let a = document.createElement("a");
+    a.href = res.data.fileURL;
+    a.download = 'myexpense.csv';
+    a.click();
+  }
+  else{
+    throw new Error(res.data.message);
+  }
+  } catch (error) {
+     throw new Error(error)
+  }
+  
 }
 
 
