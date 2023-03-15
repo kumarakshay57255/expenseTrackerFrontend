@@ -7,6 +7,7 @@ let razor = document.getElementById('razorpay')
 let leader = document.getElementById('leader');
 let board = document.getElementById('board');
 const download = document.getElementById('downloadexpense');
+const pages = document.getElementById('page');
 
 razor.addEventListener('click',buyPremium);
 btn.addEventListener('click',AddExpense);
@@ -18,17 +19,19 @@ async function downloadExpense(){
   try {
     const token = localStorage.getItem('token');
  const res = await axios.get('http://localhost:4400/download',{headers:{"Authorization":token}});
-  if(res.status===200){
+ if(res.status===200){
+    
     let a = document.createElement("a");
     a.href = res.data.fileURL;
     a.download = 'myexpense.csv';
     a.click();
   }
+
   else{
     throw new Error(res.data.message);
   }
   } catch (error) {
-     throw new Error(error)
+    alert(error.response.data.message);
   }
   
 }
@@ -115,19 +118,18 @@ function showItems(obj){
    let delBtn = document.createElement('button');
    delBtn.className="btn btn-danger delete";
   delBtn.appendChild(document.createTextNode('Delete Expense'))
-   let editBtn = document.createElement('button');
-   editBtn.className = "btn btn-info edit";
-    editBtn.appendChild(document.createTextNode('Edit Expense'));
+
 
     li.appendChild(document.createTextNode(`${obj.expenseamount} ${obj.category} ${obj.description}`))
     li.appendChild(delBtn);
-    li.appendChild(editBtn);
+
     addExpense.appendChild(li);
 
 }
 
 window.addEventListener('DOMContentLoaded',async(e)=>{
   try {
+    const page =1;
     const token = localStorage.getItem('token');
     const decodeToken = parseJwt(token);
     if(decodeToken.ispremiumuser){
@@ -135,12 +137,11 @@ window.addEventListener('DOMContentLoaded',async(e)=>{
       document.getElementById('message').innerHTML = 'You are premium user now!';
       showLeaderBoard();
     }
-   const  items  = await axios.get('http://localhost:4400/expense',{headers:{"Authorization":token}});
-
+   const  items  = await axios.get(`http://localhost:4400/expense?page=${page}`,{headers:{"Authorization":token}});
     items.data.expense.map((ele)=>{
       showItems(ele);
     });
-    
+    showPagination(items.data);
   } catch (error) {
     throw Error(error);
   }
@@ -191,19 +192,55 @@ async function deleteExpense(event){
 
 
   rzp1.on('payment.failed', function (response){
-    console.log(response)
+   
     alert('Something went wrong')
  });
 
-
-
-
-
-      
-
-    } catch (error) {
+ } catch (error) {
        throw Error(error);
     }
 }
 
+ function showPagination({
+  currentPage,
+     hashNextPage,
+     hashPreviousPage,
+     nextPage,
+     previousPage,
+    
+
+ }){
+  pages.innerHTML = '';
+  if(hashPreviousPage){
+    const btn3 = document.createElement('button');
+    btn3.innerHTML = previousPage;
+    btn3.addEventListener('click',()=>getItems(previousPage))
+    pages.appendChild(btn3);
+ }
+   const btn1 = document.createElement('button');
+   btn1.innerHTML = `<h3>${currentPage}</h3>`;
+   btn1.addEventListener('click',()=>getItems(currentPage));
+   pages.appendChild(btn1);
+
  
+   if(hashNextPage){
+    const btn2 = document.createElement('button');
+    btn2.innerHTML = nextPage;
+    btn2.addEventListener('click',()=>getItems(nextPage))
+    pages.appendChild(btn2);
+ }
+   
+    
+ }
+
+async function getItems(page){
+  const token = localStorage.getItem('token')
+ 
+  const item =  await axios.get(`http://localhost:4400/expense?page=${page}`,{headers:{"Authorization":token}});
+
+  addExpense.innerHTML = '';
+ item.data.expense.map((ele)=>showItems(ele))
+
+ showPagination(item.data);
+
+}
